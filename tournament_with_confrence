@@ -1,0 +1,47 @@
+def build_bracket(d):
+    regions = ["W", "X", "Y", "Z"]
+    bracket = np.empty((4, 16))
+    for i in range(4):
+        for s in range(1, 17):
+            teams_in_slot = slot_teams[regions[i] + str(s).zfill(2)]
+            if len(teams_in_slot) == 1:
+                bracket[i][s - 1] = teams_in_slot[0]
+            else:                   
+                bracket[i][s - 1] = game_winner(teams_in_slot[0], teams_in_slot[1], d)
+    return bracket
+
+def first_round(bracket, d):
+    regions = np.empty((4, 8))
+    for i in range(4):
+        for j in range(8):
+            regions[i][j] = game_winner(bracket[i][j], bracket[i][15 - j], d)
+    return regions
+
+def second_round(first_results, d):
+    regions = np.empty((4, 4))
+    for i in range(4):
+        for j in range(4):
+            regions[i][j] = game_winner(first_results[i][j], first_results[i][7 - j], d)
+    return regions
+
+def sweet_16(second_results, d):
+    regions = np.empty((4, 2))
+    for i in range(4):
+        for j in range(2):
+            regions[i][j] = game_winner(second_results[i][j], second_results[i][3 - j], d)
+    return regions
+
+def elite_8(sweet_results, d):
+    regions = np.empty(4)
+    for i in range(4):
+        regions[i] = game_winner(sweet_results[i][0], sweet_results[i][1], d)
+    return regions
+
+def final_four(elite_results, d):
+    finals = np.empty(2)
+    finals[0] = game_winner(elite_results[0], elite_results[1], d)  
+    finals[1] = game_winner(elite_results[2], elite_results[3], d)   
+    return finals
+
+def championship(finals_results, d):
+    return game_winner(finals_results[0], finals_results[1], d)
